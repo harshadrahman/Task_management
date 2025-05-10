@@ -59,6 +59,10 @@ def list_user(request):
             messages.error(request, "An account with this email already exists.")
             return render(request, 'user/list_user.html',{'users': users, 'admins':admins})
 
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "An account with this username already exists.")
+            return render(request, 'user/list_user.html',{'users': users, 'admins':admins})
+
         hashed_password = make_password(password)
 
         new_user = CustomUser.objects.create(
@@ -92,6 +96,10 @@ def edit_user(request,user_id):
 
 
         if CustomUser.objects.filter(email=email).exclude(id=user_id).exists():
+            messages.error(request,'This email already exists')
+            return render(request, 'user/list_user.html',{'user': user})
+
+        if CustomUser.objects.filter(username=username).exclude(id=user_id).exists():
             messages.error(request,'This email already exists')
             return render(request, 'user/list_user.html',{'user': user})
 
@@ -141,6 +149,10 @@ def list_admin(request):
             messages.error(request, "An account with this email already exists.")
             return render(request, 'admin_list/list_admin.html', {'admins': admins})
 
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "An account with this username already exists.")
+            return render(request, 'admin_list/list_admin.html', {'admins': admins})
+
         hashed_password = make_password(password)
 
         CustomUser.objects.create(
@@ -167,6 +179,11 @@ def edit_admin(request,admin_id):
         if CustomUser.objects.filter(email=email).exclude(id=admin_id).exists():
             messages.error(request,'This email already exists')
             return render(request, 'admin_list/list_admin.html',{'admin': admin})
+
+        if CustomUser.objects.filter(username=username).exclude(id=admin_id).exists():
+            messages.error(request,'This username already exists')
+            return render(request, 'admin_list/list_admin.html',{'admin': admin})
+
 
         if new_password or confirm_password:
             if new_password != confirm_password:
